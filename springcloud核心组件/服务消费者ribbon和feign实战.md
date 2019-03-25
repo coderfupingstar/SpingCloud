@@ -126,7 +126,7 @@ users:
 
 项目配置
 #自定义负载均衡策略
-product_server:
+product-service:
   ribbon:
-    NFLoadBalancerRuleClassName:  com.netflix.loadbalancer.WeightedResponseTimeRulecom.netflix.loadbalancer.RandomRule策略的全路径    
+     NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule 策略的全路径    
 ```
