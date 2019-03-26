@@ -130,3 +130,46 @@ product-service:
   ribbon:
      NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule 策略的全路径    
 ```
+
+
+#### 使用fegion步骤详解
++ 加入依赖
+```
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+```
++ 启动类增加注解
+```
+@EnableFeignClients
+```
++ 增加一个接口
+```
+@FeignClient(name = "product-service")
+public interface ProductClient {
+    @GetMapping("/api/v1/product/find")
+    String findById(@RequestParam(value = "id")int id);
+}
+```
++ 编码实战
+```
+    @Autowired
+    private ProductClient productClie
+
+            String response = productClient.findById(productid);
+        JsonNode jsonNode = JsonUtil.str3JsonNode(response);
+```
++ 注意点
+1. 路径
+2. Http方法必须对应
+3. 使用RequestBody，应该使用POSTMAPPING
+4. 多个参数的时候，通过@RequestParam("id")方式调用
+
+#### Feign核心源码解读和服务调用方式ribbon和Feign选择
++ ribbon和feign两个区别和选择
+1. 选择Feign
+- 默认集成了ribbon
+- 写起来更加思路清晰和方便
+- 采用注解方式进行配置，配置熔断等方式方便
+
