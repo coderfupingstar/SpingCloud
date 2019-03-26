@@ -130,7 +130,16 @@ product-service:
   ribbon:
      NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule 策略的全路径    
 ```
+####feign
++ 官方文档
+```
+23. Declarative REST Client: Feign
+Feign is a declarative web service client. It makes writing web service clients easier. To use Feign create an interface and annotate it. It has pluggable annotation support including Feign annotations and JAX-RS annotations. Feign also supports pluggable encoders and decoders. Spring Cloud adds support for Spring MVC annotations and for using the same HttpMessageConverters used by default in Spring Web. Spring Cloud integrates Ribbon and Eureka to provide a load balanced http client when using Feign.
 
+自己翻译：
+声明式的Rest的客户端
+Feign是声明式的web服务客户端。是的编写web服务客户端变得更容易。创建一个接口并且加上注解就可以使用Fegion。它包括Feign注解和JAX—RS注解的可插拔的注解支持。Fegin提供了可插拔的编译器和解码器。springcloud对其进行扩展，当在springweb中使用Feign的时候默认支持springmvc的支持并且使用相同的HttpMessageConverters。SpringCloud为Feign内置了Ribbon和Eureka使得使用它的时候提供http的负载均衡客户端。
+```
 
 #### 使用fegion步骤详解
 + 加入依赖
@@ -165,6 +174,21 @@ public interface ProductClient {
 2. Http方法必须对应
 3. 使用RequestBody，应该使用POSTMAPPING
 4. 多个参数的时候，通过@RequestParam("id")方式调用
+
+#### 复写fegin默认配置
+```
+官方文档
+23.2 Overriding Feign Defaults
+A central concept in Spring Cloud’s Feign support is that of the named client. Each feign client is part of an ensemble of components that work together to contact a remote server on demand, and the ensemble has a name that you give it as an application developer using the @FeignClient annotation. Spring Cloud creates a new ensemble as an ApplicationContext on demand for each named client using FeignClientsConfiguration. This contains (amongst other things) an feign.Decoder, a feign.Encoder, and a feign.Contract. It is possible to override the name of that ensemble by using the contextId attribute of the @FeignClient annotation.
+
+Spring Cloud lets you take full control of the feign client by declaring additional configuration (on top of the FeignClientsConfiguration) using @FeignClient. 
+
+自己翻译
+SpringCloud的Fegin支持的一个中心概念是命名客户端。每个Fegin客户端是整体的一部分，他们一起工作按需连接远程服务，整体有一个名称，开发人员可以使用@FeignClient注解为其命名。Springcloud根据需求使用FeignClientsConfiguration为每个命名的客户端创建一个新的整体作为一个ApplicationContext，这包含（其他)feign.Decoder feign.Encoder feign.Contract.为使用@FeignClient annotation的contextId属性的整体重命名是可能的。
+
+使用注解@FeignClient，通过在FeignClientsConfiguration上面声明额外配置，springCloud让我们完全控制Fegin客户端。
+
+```
 
 #### Feign核心源码解读和服务调用方式ribbon和Feign选择
 + ribbon和feign两个区别和选择
