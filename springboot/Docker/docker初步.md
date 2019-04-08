@@ -88,6 +88,136 @@
        在建立镜像时，每次写操作，都被视作一种增量操作，即在原有的数据层上添加一个新层；所以一个镜像会有若干个层组成。
        每次commit提交就会对产生一个ID，就相当于在上一层有加了一层，可以通过这个ID对镜像回滚
 
+3. 常用操作
+
+   + 检索 docker search 关键字
+   + 拉取 docker pull 镜像名：tag（标签)
+   + 列表 docker image 
+   + 删除 docker rmi image-id
+
+##### 容器
+
+1. **操作**
+
+   + 步骤：
+
+   ```shell
+   1.搜索镜像
+   2.下载镜像
+   3.根据镜像启动容器
+   	docker run --name container-name -d image-name:tag
+   4. 列表
+   	docker ps（查看运行中的容器）
+   5. 停止运行中的容器
+   	docker stop container-id
+   6. 查看所有的容器
+   	docker ps -a
+   7. 启动容器
+   	docker start container-id
+   8. 删除容器（容器必须是停止状态）
+   	docker rm container-id
+   9. 启动一个做了端口映射的tomcat
+   	docker run -d -p 8888:8080 tomcat
+   	-d:后台运行 -p:将主机的端口映射到一个容器的端口  主机端口：容器内部端口
+   10.查看容器日志
+   	docker logs container-name|container-id
+   	
+   	
+   	
+   	
+   ```
+
+   
+
+
+
+##### Docker启动安装停止
+
+1. 安装
+
+   + 检查内核版本
+
+   ```shell
+   uname -r
+   ```
+
+   + 由于 `apt` 源使用 HTTPS 以确保软件下载过程中不被篡改。因此，我们首先需要添加使用 HTTPS 传输的软件包以及 CA 证书。
+
+   ```shell
+   $ sudo apt-get update
+   
+   $ sudo apt-get install \
+       apt-transport-https \
+       ca-certificates \
+       curl \
+       software-properties-common
+   ```
+
+   + 鉴于国内网络问题，强烈建议使用国内源，官方源请在注释中查看。
+
+     为了确认所下载软件包的合法性，需要添加软件源的 `GPG` 密钥。
+
+     ```shell
+     $ curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
+     
+     
+     # 官方源
+     # $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+     向sources.list中添加软件源
+     $ sudo add-apt-repository \
+         "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu \
+         $(lsb_release -cs) \
+         stable"
+     
+     
+     # 官方源
+     # $ sudo add-apt-repository \
+     #    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+     #    $(lsb_release -cs) \
+     #    stable"
+     ```
+
+   + 更新Apt软件包缓存，安装docker
+
+   ```shell
+   $ sudo apt-get update
+   
+   $ sudo apt-get install docker-ce
+   ```
+
+   + 启动docker
+
+   ```shell
+   $ sudo service docker start
+   $ sudo systemctl start docker
+   ```
+
+   + 设置开启启动docker
+
+   ```shell
+   $ sudo systemctl enable docker
+   ```
+
+   + 停止docker
+
+   ```shell
+   systemctl stop docker
+   service docker stop
+   ```
+
+   + 建立docker用户组
+
+   ```shell
+   建立docker组
+   $ sudo groupadd docker
+   
+   将当前用户添加到docker组
+   ```
+
+   ```bash
+   $ sudo usermod -aG docker $USER
+   ```
+
 
 
 
