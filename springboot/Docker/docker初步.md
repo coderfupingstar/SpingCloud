@@ -5,14 +5,14 @@
 
 2. **Docker架构与内部组件**
 
-   + Docker daemon作为客户端接收来自客户端的请求，并处理这些请求，比如创建，运行容器等。客户端提供一系列指令与Docker daemon交互。
-   + LXC：Linux容器技术，共享内核，容器共享宿主局资源，使用namespace和cgroup对资源限制于隔离。
+   + Docker daemon作为服务端接收来自客户端的请求，并处理这些请求，比如创建，运行容器等。客户端提供一系列指令与Docker daemon交互。
+   + LXC：Linux容器技术，共享内核，容器共享宿主机资源，使用namespace和cgroup对资源限制和隔离。
    + Cgroups：（control groups）Linxu内核提供的一种限制单进程或者多进程资源的限制，比如cpu 内存等资源的使用限制
    + Namespace：命名空间，也称名字空间，Linux内核提供的一种限制单进程或者多进程资源隔离的机制，一个进程可以属于多个命名空间，Linux内核提供了6种namespace：UTS IPS PID Network Mount User
    + UFS：（UnionFS）联合文件系统，支持将不同位置的目录挂载到同一虚拟文件系统，形成一种分层的模型，成员目录称为虚拟文件系统的一个分支branch
    + AUFS（advanced multi layered unification filesystem）：高级多层统一文件系统，是UFS的一种，每个branch可以指定readonly（ro只读）、 readwrite（读写）和whiteout-able（wo隐藏）权限；一般情况下， aufs只有最上层的branch才有读写权限，其他branch均为只读权限。 《ubuntu默认的存储驱动》
 
-   ![Docker内部架构](F:\DarkHorse.Road\github\SpingCloud\springboot\Docker\images\Docker内部结构.png)
+   ![Docker内部结构](E:\DarkhorseRoad\github\SpingCloud\springboot\Docker\images\Docker内部结构.png)
 
 3. **Docker优点**
 
@@ -29,9 +29,7 @@
 
 4. **虚拟机与容器的区别**
 
-   
-
-   ![虚拟机与容器的区别](F:\DarkHorse.Road\github\SpingCloud\springboot\Docker\images\虚拟机与容器的区别.png)
+   ![虚拟机与容器的去区别](E:\DarkhorseRoad\github\SpingCloud\springboot\Docker\images\虚拟机与容器的区别.png)
 
    - 以KVM举例
      - 启动时间
@@ -68,25 +66,18 @@
 2. **镜像从哪里来**
 
    + Docker Hub是由Docker公司维护的的公共注册中心，包含大量的容器镜像，Docker默认从这个公共镜像库下载镜像，https://hub.docker.com/explore 下载慢，可以从国内的源提高下载速度curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://04be47cf.m.daocloud.io 
-
    + 工作原理
 
      + 当我们启动一个新的容器时， Docker会加载只读镜像，并在其之上添加一个读写层，并将镜像中的目录复制一份到
-       /var/lib/docker/aufs/mnt/容器ID为目录下，我们可以使用chroot进入此目录。如果运行中的容器修改一个已经存在的文件，
-       那么会将该文件从下面的只读层复制到读写层，只读层的这个文件就会覆盖，但还存在，这就实现了文件系统隔离，当删除容
-       器后，读写层的数据将会删除，只读镜像不变。 
-
+       /var/lib/docker/aufs/mnt/容器ID为目录下，我们可以使用chroot进入此目录。**如果运行中的容器修改一个已经存在的文件，
+       那么会将该文件从下面的只读层复制到读写层，只读层的这个文件就会覆盖，但还存在，只是隐藏了（ufs）这就实现了文件系统隔离，当删除容
+       器后，读写层的数据将会删除，只读镜像不变。 **
    + 镜像文件存储结构
 
      + docker相关文件存放在： /var/lib/docker目录下
-       /var/lib/docker/aufs/diff # 每层与其父层之间的文件差异
-
-       | /var/lib/docker/aufs/layers/          | # 每层一个文件，记录其父层一直到根层之间的ID，大部分文件的最后一行都已，表示继 |
-       | ------------------------------------- | ------------------------------------------------------------ |
-       | 承来自同一层 /var/lib/docker/aufs/mnt | # 联合挂载点，从只读层复制到最上层可读写层的文件系统数据     |
-
-       在建立镜像时，每次写操作，都被视作一种增量操作，即在原有的数据层上添加一个新层；所以一个镜像会有若干个层组成。
-       每次commit提交就会对产生一个ID，就相当于在上一层有加了一层，可以通过这个ID对镜像回滚
+     + /var/lib/docker/aufs/diff # 每层与其父层之间的文件差异
+     + /var/lib/docker/aufs/layers/   # 每层一个文件，记录其父层一直到根层之间的ID，大部分文件的最后一行都已，表示继  承来自同一层
+     + /var/lib/docker/aufs/mnt    # 联合挂载点，从只读层复制到最上层可读写层的文件系统数据.在建立镜像时，每次写操作，都被视作一种增量操作，即在原有的数据层上添加一个新层；所以一个镜像会有若干个层组成。每次commit提交就会对产生一个ID，就相当于在上一层有加了一层，可以通过这个ID对镜像回滚.
 
 3. 常用操作
 
@@ -94,40 +85,90 @@
    + 拉取 docker pull 镜像名：tag（标签)
    + 列表 docker image 
    + 删除 docker rmi image-id
+   + export
+   + import
+   + save
+   + load
 
 ##### 容器
 
-1. **操作**
+1. 创建容器常用选项
 
-   + 步骤：
+   + docker create [options] 
+     + 创建新的容器不启动
+   + docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+     + 创建一个新的容器并且启动
+     + 参数
+       + -i, --interactive                    Keep STDIN open even if not attached
+       + -t, --tty                            Allocate a pseudo-TTY
+       + -d, --detach                         Run container in background and print container ID
 
-   ```shell
-   1.搜索镜像
-   2.下载镜像
-   3.根据镜像启动容器
-   	docker run --name container-name -d image-name:tag
-   4. 列表
-   	docker ps（查看运行中的容器）
-   5. 停止运行中的容器
-   	docker stop container-id
-   6. 查看所有的容器
-   	docker ps -a
-   7. 启动容器
-   	docker start container-id
-   8. 删除容器（容器必须是停止状态）
-   	docker rm container-id
-   9. 启动一个做了端口映射的tomcat
-   	docker run -d -p 8888:8080 tomcat
-   	-d:后台运行 -p:将主机的端口映射到一个容器的端口  主机端口：容器内部端口
-   10.查看容器日志
-   	docker logs container-name|container-id
-   	
-   	
-   	
-   	
-   ```
+2. 容器基本操作
+
+   + ps
+   + attach
+   + rm
+   + start
+   + stop
+   + kill
+   + pause/unpause
+   + rename
+
+3. 容器更多操作
+
+   + inspect
+   + exec
+   + top
+   + port
+   + top
+   + cp
+   + diffs
+   + logs
+   + stats
+   + update
+   + events
+
+4. 容器数据持久化
+
+   + 数据卷
+
+     + 将宿主机的数据目录挂载到容器的目录
+
+   + 数据卷的特点
+
+     + 在容器启动初始化时，如果容器使用的宿主机挂载点有数据，就会将数据拷贝到容器中
+     + 数据卷可以直接在容器中共享和重用
+     + 可以直接对数据卷里的内容进行修改
+     + 数据卷的变化不会影响镜像的变化
+     + 卷会一直存在，即使挂载卷的容器已经删除
+
+     ```shell
+     root@fupingstar-VirtualBox:/home/hadoop# docker run -itd --name web01 -v /container_web:/data ubuntu
+     /container_web是宿主机的目录  /data是容器的目录
+     ```
+
+     
+
+   + 容器数据卷
+
+     + 将一个运行的容器作为数据卷，让其他容器通过挂载这个容器实现数据的共享。
+
+       
+
+       
+
+5. 搭建LNMP
+
+   + 创建mysql数据库容器
 
    
+
+```shell
+
+	
+```
+
+
 
 
 
@@ -220,9 +261,12 @@
 
 
 
+##### 网络
 
-
-
+1. 网络模式
+2. 容器网络访问原理
+3. 桥接宿主机和配置固定IP
+4. 容器SSH连接
 
 
 
